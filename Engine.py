@@ -4,12 +4,33 @@ pgClock = None
 pgFrameRate = 0
 pgRunning = False
 
+class Image:
+    def __init__(self, path):
+        self.img = pg.image.load(path)
+
+class Sound:
+    def __init__(self, path):
+        self.sound = pg.mixer.Sound(path)
+
 def gameSize():
     return pg.display.get_surface().get_size()
 
 def drawRect(x, y, w, h, *color):
     if pgRunning:
         pg.draw.rect(pgScreen, color, (x, y, w, h))
+    else:
+        print("Start the Game")
+
+def drawImage(x, y, w, h, image):
+    if pgRunning:
+        pgScreen.blit(pg.transform.scale(image.img, (w, h)), (x, y))
+    else:
+        print("Start the Game")
+
+def playSound(sound):
+    if pgRunning:
+        if not pg.mixer.get_busy():
+            sound.sound.play()
     else:
         print("Start the Game")
 
@@ -50,6 +71,7 @@ def createGame(caption="New Game", width=600, height=600, framerate=60):
     global pgScreen, pgClock, pgFrameRate, pgRunning
     if not pgScreen:
         pg.init()
+        pg.mixer.init()
         pgScreen = pg.display.set_mode((width, height))
         pg.display.set_caption(caption)
         pgClock = pg.time.Clock()
@@ -63,6 +85,7 @@ def stopGame():
     pgClock = None
     pgRunning = False
     pgScreen = None
+    pg.mixer.quit()
 
 def run():
     lastPressed = False
