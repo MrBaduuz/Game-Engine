@@ -1,9 +1,10 @@
 import time
+import random
 
 import sys
 engine_path = sys.path[0].replace("Examples", "")
 sys.path.append(engine_path)
-import Engine as eng#
+import Engine as eng
 
 
 eng.createGame("Drums", 600, 600, 60)
@@ -13,15 +14,20 @@ colors = [(223, 226, 122), (226, 122, 122), (132, 226, 122), (122, 122, 226)]
 clicked_colors = [(255, 255, 0), (255, 0, 0), (0, 255, 0), (0, 0, 225)]
 clicked_fields = [0, 0, 0, 0]
 isPlaying = False
-play_list = [2, 1, 3, 0, 0, 0, 1, 2, 1]
+play_list = [1, 2, 3]
 curr_song = 0
 play_mode = False
 
 def click(index):
-    global isPlaying, curr_song
-    clicked_fields[index] = 0.2
+    global isPlaying, curr_song, play_mode
+    clicked_fields[index] = 0.5
     isPlaying = True
     curr_song += 1
+    if curr_song == len(play_list):
+        if play_mode:
+            play_list.append(random.randint(0, 3))
+        play_mode = not play_mode
+        curr_song = 0
 
 def mouseClicked():
     global isPlaying
@@ -40,29 +46,29 @@ def mouseClicked():
 def show_clicked(dt):
     global isPlaying
     if clicked_fields[0] > 0:
-        eng.drawRect(0, 0, width/2, height/2, clicked_colors[0])
+        if clicked_fields[0] > 0.3:
+            eng.drawRect(0, 0, width/2, height/2, clicked_colors[0])
         clicked_fields[0] -= dt
         if clicked_fields[0] <= 0:
             isPlaying = False
-            time.sleep(0.3)
     if clicked_fields[1] > 0:
-        eng.drawRect(width/2, 0, width/2, height/2, clicked_colors[1])
+        if clicked_fields[1] > 0.3:
+            eng.drawRect(width/2, 0, width/2, height/2, clicked_colors[1])
         clicked_fields[1] -= dt
         if clicked_fields[1] <= 0:
             isPlaying = False
-            time.sleep(0.3)
     if clicked_fields[2] > 0:
-        eng.drawRect(0, height/2, width/2, height/2, clicked_colors[2])
+        if clicked_fields[2] > 0.3:
+            eng.drawRect(0, height/2, width/2, height/2, clicked_colors[2])
         clicked_fields[2] -= dt
         if clicked_fields[2] <= 0:
             isPlaying = False
-            time.sleep(0.3)
     if clicked_fields[3] > 0:
-        eng.drawRect(width/2, height/2, width/2, height/2, clicked_colors[3])
+        if clicked_fields[3] > 0.3:
+            eng.drawRect(width/2, height/2, width/2, height/2, clicked_colors[3])
         clicked_fields[3] -= dt
         if clicked_fields[3] <= 0:
             isPlaying = False
-            time.sleep(0.3)
 
 def update(deltaTime):
     global mouseX, mouseY
@@ -72,8 +78,8 @@ def update(deltaTime):
     eng.drawRect(0, height/2, width/2, height/2, colors[2])
     eng.drawRect(width/2, height/2, width/2, height/2, colors[3])
     show_clicked(deltaTime)
-    #if not isPlaying:
-    #    click(play_list[curr_song])
+    if not isPlaying and not play_mode:
+        click(play_list[curr_song])
 
 
 eng.update = update
