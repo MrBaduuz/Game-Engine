@@ -7,7 +7,7 @@ sys.path.append(engine_path)
 import Engine as eng
 
 PLAY_TIME = 0.3
-DELAY_TIME = 0.3
+DELAY_TIME = 0.4
 eng.createGame("Drums", 600, 600, 60)
 width, height = eng.gameSize()
 mouseX, mouseY = (0, 0)
@@ -15,27 +15,28 @@ colors = [(223, 226, 122), (226, 122, 122), (132, 226, 122), (122, 122, 226)]
 clicked_colors = [(255, 255, 0), (255, 0, 0), (0, 255, 0), (0, 0, 225)]
 clicked_fields = [0, 0, 0, 0]
 isPlaying = False
-play_list = [random.randint(0, 3)]
+play_list = []
 curr_song = 0
 play_mode = False
 score = 0
+menu = True
 
 def click(index):
-    global isPlaying, curr_song, play_mode, play_list, score
+    global isPlaying, curr_song, play_mode, play_list, score, menu
     if play_mode and index != play_list[curr_song]:
-        isPlaying = False
-        play_list = [random.randint(0, 3)]
-        curr_song = 0
-        play_mode = False
-        score = 0
+        menu = True
+        unclick(0)
+        time.sleep(0.4)
+        return
     clicked_fields[index] = DELAY_TIME + PLAY_TIME
+    if play_mode:
+        clicked_fields[index] = DELAY_TIME*1.2 + PLAY_TIME
     isPlaying = True
     curr_song += 1
     if curr_song == len(play_list):
         if play_mode:
             play_list.append(random.randint(0, 3))
             score += 1
-            print(score)
         play_mode = not play_mode
         curr_song = 0
 
@@ -45,22 +46,31 @@ def unclick(index):
             clicked_fields[i] = 0
 
 def mouseClicked():
-    global isPlaying
-    if play_mode:
-        if mouseX < width/2:
-            if mouseY < height/2:
-                unclick(0)
-                click(0)
+    global isPlaying, menu, play_mode, curr_song, score, play_list
+    if menu:
+        isPlaying = True
+        play_list = [random.randint(0, 3)]
+        curr_song = 0
+        play_mode = False
+        score = 0
+        menu = False
+        isPlaying = False
+    else:
+        if play_mode:
+            if mouseX < width/2:
+                if mouseY < height/2:
+                    unclick(0)
+                    click(0)
+                else:
+                    unclick(2)
+                    click(2)
             else:
-                unclick(2)
-                click(2)
-        else:
-            if mouseY < height/2:
-                unclick(1)
-                click(1)
-            else:
-                unclick(3)
-                click(3)
+                if mouseY < height/2:
+                    unclick(1)
+                    click(1)
+                else:
+                    unclick(3)
+                    click(3)
 
 def show_clicked(dt):
     global isPlaying
@@ -97,8 +107,11 @@ def update(deltaTime):
     eng.drawRect(0, height/2, width/2, height/2, colors[2])
     eng.drawRect(width/2, height/2, width/2, height/2, colors[3])
     show_clicked(deltaTime)
-    if not isPlaying and not play_mode:
-        click(play_list[curr_song])
+    if not menu:
+        if not isPlaying and not play_mode:
+            click(play_list[curr_song])
+    else:
+        eng.drawText(str(score), width/2, height/2, 100, (0, 0, 0))
 
 
 eng.update = update

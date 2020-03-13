@@ -27,11 +27,12 @@ def drawImage(x, y, w, h, image):
     else:
         print("Start the Game")
 
-def showText(text, x, y, scl, *color):
+def drawText(text, x, y, scl, *color):
     tFon = pg.font.SysFont("Calibri", scl)
     tSurf = tFon.render(text, True, color)
     tRec = tSurf.get_rect()
-    pgScreen.blit(tSurf, (x, y))
+    tRec.center = (x, y)
+    pgScreen.blit(tSurf, tRec)
 
 def playSound(sound):
     if pgRunning:
@@ -68,7 +69,7 @@ def mouseReleased():
     pass
 
 def update(deltaTime):
-    showText("Moin", 300, 300, 20, (255, 255, 255))
+    pass
 
 def events(evts):
     pass
@@ -112,6 +113,3 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
-
-createGame()
-run()
