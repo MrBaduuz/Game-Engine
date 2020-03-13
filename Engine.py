@@ -40,10 +40,10 @@ def mouseClicked():
 def mouseReleased():
     pass
 
-def update():
+def update(deltaTime):
     pass
 
-def events():
+def events(evts):
     pass
 
 def createGame(caption="New Game", width=600, height=600, framerate=60):
