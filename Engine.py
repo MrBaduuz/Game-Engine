@@ -53,9 +53,9 @@ def drawEllipse(x, y, w, h, *color):
     else:
         print("Start the Game")
 
-def drawLine(x1, y1, x2, y2, *color):
+def drawLine(x1, y1, x2, y2, color):
     if pgRunning:
-        pg.draw.line(pgScreen, color, (x1, y1, x2, y2))
+        pg.draw.line(pgScreen, (color[0], color[1], color[2]), (x1, y1), (x2, y2), color[3])
 
 def mouseCoords():
     return pg.mouse.get_pos()
@@ -90,6 +90,10 @@ def createGame(caption="New Game", width=600, height=600, framerate=60):
         pgRunning = True
     else:
         print( "Screen already created")
+
+def setIcon(path):
+    pg.display.set_icon(pg.image.load(path))
+
 def stopGame():
     global pgClock, pgRunning, pgScreen
     pg.quit()
