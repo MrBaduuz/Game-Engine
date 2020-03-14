@@ -18,16 +18,32 @@ class Fruit:
 		self.y = random.randint(eng.gameSize()[1] + 100, eng.gameSize()[1] + 190)
 		self.col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 		self.vel = random.randint(-25, -20)
+		self.wasUp = False
 	def show(self):
 		eng.drawEllipse(self.x, self.y, self.r, self.r, self.col)
 	def update(self, dt):
 		self.vel += 0.3 * dt * 120
 		self.y += self.vel * dt * 120
-		if (mouseX-self.x)**2 + (mouseY-self.y)**2 < self.r**2:
-			p1 = slices[slice_ind].list[len(slices[slice_ind])-1]
-			p2 = slices[slice_ind].list[len(slices[slice_ind])-2]
-			if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 < 20**2:
-				print("Hit")
+		if self.y > eng.gameSize()[1] and self.wasUp:
+			self.restart()
+		if self.y < eng.gameSize()[1] and not self.wasUp:
+			self.wasUp = True
+		if (mouseX-self.x)**2 + (mouseY-self.y)**2 < (self.r/2)**2 and eng.mousePressed():
+			list_len = len(slices[slice_ind].list)
+			if list_len > 2:
+				p1 = slices[slice_ind].list[list_len-1]
+				p2 = slices[slice_ind].list[list_len-2]
+				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 10**2:
+					global score
+					score += 1
+					self.restart()
+
+	def restart(self):
+		self.r = random.randint(50, 70)
+		self.x = random.randint(self.r, eng.gameSize()[0]-self.r)
+		self.y = random.randint(eng.gameSize()[1] + 100, eng.gameSize()[1] + 190)
+		self.col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+		self.vel = random.randint(-25, -20)
 
 eng.createGame("Fruit Ninja", 800, 800, 120)
 eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
@@ -36,7 +52,9 @@ mouseX, mouseY = (0, 0)
 score = 0
 slices = []
 slice_ind = -1
+score = 0
 f = Fruit()
+failed = 0
 
 def update(deltaTime):
 	global mouseX, mouseY, slices, slice_ind
