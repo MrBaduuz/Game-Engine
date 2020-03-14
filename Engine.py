@@ -41,6 +41,12 @@ def playSound(sound):
     else:
         print("Start the Game")
 
+def stopSound():
+    if pgRunning:
+        pg.mixer.stop()
+    else:
+        print("Start the Game")
+
 def drawBg(r, g, b):
     if pgRunning:
         pg.draw.rect(pgScreen, (r, g, b), (0, 0, gameSize()[0], gameSize()[1]))
