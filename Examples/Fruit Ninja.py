@@ -25,12 +25,12 @@ class Fruit:
 		self.vel += 0.3 * dt * 120
 		self.y += self.vel * dt * 120
 		if self.y > eng.gameSize()[1] and self.wasUp:
-			global failed
+			global failed, menu, slices, slice_ind
 			failed -= 1
 			if failed == 0:
-				eng.stopGame()
-				eng.createGame("Fruit Ninja", 800, 800, 120)
-				eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
+				menu = True
+				slices = [Slice(mouseX, mouseY)]
+				slice_ind = 0
 			self.restart()
 		if self.y < eng.gameSize()[1] and not self.wasUp:
 			self.wasUp = True
@@ -55,13 +55,14 @@ class Fruit:
 eng.createGame("Fruit Ninja", 800, 800, 120)
 eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
 del_time = 0.1
-mouseX, mouseY = (0, 0)
+mouseX, mouseY = eng.mouseCoords()
 score = 0
-slices = []
-slice_ind = -1
+slices = [Slice(mouseX, mouseY)]
+slice_ind = 0
 score = 0
 f = Fruit()
 failed = 5
+menu = True
 
 def cross(x):
 	eng.drawLine(x-10, 20, x+10, 40, (255, 0, 0, 5))
@@ -70,32 +71,59 @@ def cross(x):
 def update(deltaTime):
 	global mouseX, mouseY, slices, slice_ind
 	mouseX, mouseY = eng.mouseCoords()
-	if eng.mousePressed():
-		slices[slice_ind].add(mouseX, mouseY)
-
 	eng.drawBg(50, 50, 50)
-	f.update(deltaTime)
-	f.show()
-	for slice in slices:
-		for i in range(1, len(slice.list)):
-			p1 = slice.list[i]
-			p2 = slice.list[i-1]
-			eng.drawLine(p1[0], p1[1], p2[0], p2[1], (255, 255, 255, 3))
-
-	for slice in slices:
-		for point in slice.list:
-			point[2] -= deltaTime
-			if point[2] < 0:
-				slice.list.remove(point)
-
-	eng.drawText(f"Score: {score}", 75, 30, 30, (255, 255, 255))
-	for i in range(failed):
-		cross(eng.gameSize()[0]-(i*50+50))
+	if not menu:
+		if eng.mousePressed():
+			slices[slice_ind].add(mouseX, mouseY)
+	
+		f.update(deltaTime)
+		f.show()
+		for slice in slices:
+			for i in range(1, len(slice.list)):
+				p1 = slice.list[i]
+				p2 = slice.list[i-1]
+				eng.drawLine(p1[0], p1[1], p2[0], p2[1], (255, 255, 255, 3))
+	
+		for slice in slices:
+			for point in slice.list:
+				point[2] -= deltaTime
+				if point[2] < 0:
+					slice.list.remove(point)
+	
+		eng.drawText(f"Score: {score}", 75, 30, 30, (255, 255, 255))
+		for i in range(failed):
+			cross(eng.gameSize()[0]-(i*50+50))
+	else:
+		slices[0].add(mouseX, mouseY)
+		for slice in slices:
+			for i in range(1, len(slice.list)):
+				p1 = slice.list[i]
+				p2 = slice.list[i-1]
+				eng.drawLine(p1[0], p1[1], p2[0], p2[1], (255, 255, 255, 3))
+	
+		for slice in slices:
+			for point in slice.list:
+				point[2] -= deltaTime
+				if point[2] < 0:
+					slice.list.remove(point)
+		eng.drawText("Click to Start", eng.gameSize()[0]/2, eng.gameSize()[1]/2, 50, (255, 255, 255))
 
 def mouseClicked():
-	global slices, slice_ind
-	slice_ind += 1
-	slices.append(Slice(mouseX, mouseY))
+	global menu, slices, slice_ind, score, f, failed, mouseX, mouseY
+	if menu:
+		mouseX, mouseY = (0, 0)
+		score = 0
+		slices = []
+		slice_ind = 0
+		mouseX, mouseY = eng.mouseCoords()
+		slices.append(Slice(mouseX, mouseY))
+		score = 0
+		f = Fruit()
+		failed = 5
+		menu = False
+	else:
+		slice_ind += 1
+		slices.append(Slice(mouseX, mouseY))
 
 def mouseReleased():
 	pass
