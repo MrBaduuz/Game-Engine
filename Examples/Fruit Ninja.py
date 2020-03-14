@@ -25,6 +25,12 @@ class Fruit:
 		self.vel += 0.3 * dt * 120
 		self.y += self.vel * dt * 120
 		if self.y > eng.gameSize()[1] and self.wasUp:
+			global failed
+			failed -= 1
+			if failed == 0:
+				eng.stopGame()
+				eng.createGame("Fruit Ninja", 800, 800, 120)
+				eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
 			self.restart()
 		if self.y < eng.gameSize()[1] and not self.wasUp:
 			self.wasUp = True
@@ -44,6 +50,7 @@ class Fruit:
 		self.y = random.randint(eng.gameSize()[1] + 100, eng.gameSize()[1] + 190)
 		self.col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 		self.vel = random.randint(-25, -20)
+		self.wasUp = False
 
 eng.createGame("Fruit Ninja", 800, 800, 120)
 eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
@@ -54,7 +61,11 @@ slices = []
 slice_ind = -1
 score = 0
 f = Fruit()
-failed = 0
+failed = 5
+
+def cross(x):
+	eng.drawLine(x-10, 20, x+10, 40, (255, 0, 0, 5))
+	eng.drawLine(x-10, 40, x+10, 20, (255, 0, 0, 5))
 
 def update(deltaTime):
 	global mouseX, mouseY, slices, slice_ind
@@ -76,6 +87,10 @@ def update(deltaTime):
 			point[2] -= deltaTime
 			if point[2] < 0:
 				slice.list.remove(point)
+
+	eng.drawText(f"Score: {score}", 75, 30, 30, (255, 255, 255))
+	for i in range(failed):
+		cross(eng.gameSize()[0]-(i*50+50))
 
 def mouseClicked():
 	global slices, slice_ind
