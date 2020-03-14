@@ -53,6 +53,10 @@ def drawEllipse(x, y, w, h, *color):
     else:
         print("Start the Game")
 
+def drawLine(x1, y1, x2, y2, *color):
+    if pgRunning:
+        pg.draw.line(pgScreen, color, (x1, y1, x2, y2))
+
 def mouseCoords():
     return pg.mouse.get_pos()
 
