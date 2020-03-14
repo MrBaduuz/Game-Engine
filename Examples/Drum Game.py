@@ -13,6 +13,9 @@ width, height = eng.gameSize()
 mouseX, mouseY = (0, 0)
 colors = [(223, 226, 122), (226, 122, 122), (132, 226, 122), (122, 122, 226)]
 clicked_colors = [(255, 255, 0), (255, 0, 0), (0, 255, 0), (0, 0, 225)]
+music_path = "C:\\Users\\Jöl\\Documents\\Projects\\Game-Engine\\Examples\\"
+print(sys.path[0])
+sounds = [eng.Sound(music_path + "NÄÄ.wav"), eng.Sound(music_path + "ÜÜ.wav"), eng.Sound(music_path + "EN.wav"), eng.Sound(music_path + "JAA.wav")]
 clicked_fields = [0, 0, 0, 0]
 isPlaying = False
 play_list = []
@@ -23,9 +26,12 @@ menu = True
 
 def click(index):
     global isPlaying, curr_song, play_mode, play_list, score, menu
+    eng.stopSound()
+    eng.playSound(sounds[index])
     if play_mode and index != play_list[curr_song]:
         menu = True
         unclick(0)
+        eng.stopSound()
         time.sleep(0.4)
         return
     clicked_fields[index] = DELAY_TIME + PLAY_TIME
@@ -60,16 +66,20 @@ def mouseClicked():
             if mouseX < width/2:
                 if mouseY < height/2:
                     unclick(0)
+                    eng.stopSound()
                     click(0)
                 else:
                     unclick(2)
+                    eng.stopSound()
                     click(2)
             else:
                 if mouseY < height/2:
                     unclick(1)
+                    eng.stopSound()
                     click(1)
                 else:
                     unclick(3)
+                    eng.stopSound()
                     click(3)
 
 def show_clicked(dt):
