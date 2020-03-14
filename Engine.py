@@ -75,7 +75,7 @@ def mouseReleased():
     pass
 
 def update(deltaTime):
-    drawEllipse(300, 300, 300, 300, (255, 255, 255))
+    pass
 
 def events(evts):
     pass
@@ -123,5 +123,3 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
-createGame()
-run()
