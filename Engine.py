@@ -49,7 +49,9 @@ def drawBg(r, g, b):
 
 def drawEllipse(x, y, w, h, *color):
     if pgRunning:
-        pg.draw.ellipse(pgScreen, color, (x-w/2, y-h/2, x+w/2, y+h/2))
+        rec = pg.Rect(0, 0, w, h)
+        rec.center = (x, y)
+        pg.draw.ellipse(pgScreen, color, rec)
     else:
         print("Start the Game")
 
@@ -73,7 +75,7 @@ def mouseReleased():
     pass
 
 def update(deltaTime):
-    pass
+    drawEllipse(300, 300, 300, 300, (255, 255, 255))
 
 def events(evts):
     pass
@@ -121,3 +123,5 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
+createGame()
+run()
