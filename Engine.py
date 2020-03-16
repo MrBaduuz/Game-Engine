@@ -1,5 +1,6 @@
 import pygame as pg
 import math
+import random
 pgScreen = None
 pgClock = None
 pgFrameRate = 0
@@ -36,6 +37,9 @@ class Vector:
 		self.x *= mg/self.mag()
 		self.y *= mg/self.mag()
 		self.z *= mg/self.mag()
+	def limit(self, mg):
+		if self.mag() > mg:
+			self.setMag(mg)
 
 	def __add__(self, oth):
 		x = self.x + oth.x
@@ -106,12 +110,48 @@ class Particle:
 		self.pos += self.vel * dt * 60
 		self.acc.set(0, 0)
 		self.lifetime -= self.death_speed * dt * 60
+	def update(self, dt):
+		pass
 	def isDead(self):
 		return self.lifetime < 0
 	def applyForce(self, f):
 		self.acc += f / self.mass
 	def applyGravity(self, f):
 		self.acc += f
+
+class ParticleSystem:
+	def __init__(self, cap, ParticleType, adrate):
+		self.ps = []
+		self.addition_rate = adrate
+		self.capacity = cap
+		self.ptype = ParticleType
+		self.counter = 0
+		self.oldest = 0
+
+	def show(self):
+		for p in self.ps:
+			p.show()
+	def update(self, dt):
+		self.counter += dt
+		self.add()
+		for p in self.ps:
+			p.update(dt)
+			if p.isDead():
+				self.ps.remove(p)
+	def add(self):
+		if self.counter > self.addition_rate:
+			self.counter = 0
+			if len(self.ps) < self.capacity:
+				self.ps.append(self.initParticle())
+			else:
+				self.ps[self.oldest] = self.initParticle()
+				self.oldest += 1
+				self.oldest %= self.capacity
+
+	def initParticle(self):
+		return self.ptype()
+
+
 
 def gameSize():
     return pg.display.get_surface().get_size()
@@ -193,12 +233,9 @@ def mouseClicked():
 
 def mouseReleased():
     pass
-p = Particle(Vector(40, 40))
+
 def update(deltaTime):
-	drawBg(0, 0, 0)
-	p.applyGravity(Vector(0, 0.6))
-	p.update(deltaTime)
-	p.show()
+	pass
 
 def events(evts):
     pass
