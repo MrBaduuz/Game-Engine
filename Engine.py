@@ -48,20 +48,30 @@ class Vector:
 		z = self.z - oth.z
 		return Vector(x, y, z)
 	def __mul__(self, oth):
-		x = self.x * oth.x
-		y = self.y * oth.y
-		z = self.z * oth.z
+		if isinstance(oth, self.__class__):
+			x = self.x * oth.x
+			y = self.y * oth.y
+			z = self.z * oth.z
+		else:
+			x = self.x * oth
+			y = self.y * oth
+			z = self.z * oth
 		return Vector(x, y, z)
-	def __div__(self, oth):
-		x = self.x / oth.x
-		y = self.y / oth.y
-		z = self.z / oth.z
+	def __truediv__(self, oth):
+		x = self.x / oth
+		y = self.y / oth
+		z = self.z / oth
+		return Vector(x, y, z)
+	def __rtruediv__(self, oth):
+		x = self.x / oth
+		y = self.y / oth
+		z = self.z / oth
 		return Vector(x, y, z)
 	def __str__(self):
 		return "X:{} Y:{} Z:{}".format(self.x, self.y, self.z)
 	def copy(self):
 		return Vector(self.x, self.y, self.z)
-	def set(*coords):
+	def set(self, *coords):
 		if len(coords) == 3:
 			self.x = coords[0]
 			self.y = coords[1]
@@ -81,6 +91,22 @@ class Vector:
 	def angleBetween(self, oth):
 		return abs((self.heading()-oth.heading()))
 
+class Particle:
+	def __init__(self, position):
+		self.pos = position
+		self.vel = Vector(0, 0)
+		self.acc = Vector(0, 0)
+		self.mass = 1
+	def show(self):
+		drawRect(self.pos.x-20, self.pos.y-20, 40, 40, (255, 0, 0))
+	def update(self):
+		self.vel += self.acc
+		self.pos += self.vel
+		self.acc.set(0, 0)
+	def applyForce(self, f):
+		self.acc += f / self.mass
+	def applyGravity(self, f):
+		self.acc += f
 
 
 def gameSize():
@@ -88,13 +114,13 @@ def gameSize():
 
 def drawRect(x, y, w, h, *color):
     if pgRunning:
-        pg.draw.rect(pgScreen, color, (x, y, w, h))
+        pg.draw.rect(pgScreen, color, (int(x), int(y), int(w), int(h)))
     else:
         print("Start the Game")
 
 def drawImage(x, y, w, h, image):
     if pgRunning:
-        pgScreen.blit(pg.transform.scale(image.img, (w, h)), (x, y))
+        pgScreen.blit(pg.transform.scale(image.img, (int(w), int(h)), (int(x), int(y))))
     else:
         print("Start the Game")
 
@@ -102,7 +128,7 @@ def drawText(text, x, y, scl, *color):
     tFon = pg.font.SysFont("Calibri", scl)
     tSurf = tFon.render(text, True, color)
     tRec = tSurf.get_rect()
-    tRec.center = (x, y)
+    tRec.center = (int(x), int(y))
     pgScreen.blit(tSurf, tRec)
 
 def playSound(sound):
@@ -126,15 +152,15 @@ def drawBg(r, g, b):
 
 def drawEllipse(x, y, w, h, *color):
     if pgRunning:
-        rec = pg.Rect(0, 0, w, h)
-        rec.center = (x, y)
+        rec = pg.Rect(0, 0, int(w), int(h))
+        rec.center = (int(x), int(y))
         pg.draw.ellipse(pgScreen, color, rec)
     else:
         print("Start the Game")
 
 def drawLine(x1, y1, x2, y2, color):
     if pgRunning:
-        pg.draw.line(pgScreen, (color[0], color[1], color[2]), (x1, y1), (x2, y2), color[3])
+        pg.draw.line(pgScreen, (color[0], color[1], color[2]), (int(x1), int(y1)), (int(x2), int(y2)), color[3])
 
 def mouseCoords():
     return pg.mouse.get_pos()
@@ -152,7 +178,7 @@ def mouseReleased():
     pass
 
 def update(deltaTime):
-    pass
+	pass
 
 def events(evts):
     pass
@@ -200,3 +226,5 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
+createGame()
+run()
