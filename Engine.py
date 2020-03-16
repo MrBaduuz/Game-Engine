@@ -97,26 +97,45 @@ class Particle:
 		self.vel = Vector(0, 0)
 		self.acc = Vector(0, 0)
 		self.mass = 1
+		self.lifetime = 1
+		self.death_speed = 0.001
 	def show(self):
-		drawRect(self.pos.x-20, self.pos.y-20, 40, 40, (255, 0, 0))
-	def update(self):
-		self.vel += self.acc
-		self.pos += self.vel
+		drawRectRot(self.pos.x-20, self.pos.y-20, 40, 40, self.lifetime * 7200, (255, 0, 255))
+	def update(self, dt):
+		self.vel += self.acc * dt * 60
+		self.pos += self.vel * dt * 60
 		self.acc.set(0, 0)
+		self.lifetime -= self.death_speed * dt * 60
+		if self.lifetime < 0:
+			return True
+		else:
+			return False
 	def applyForce(self, f):
 		self.acc += f / self.mass
 	def applyGravity(self, f):
 		self.acc += f
 
-
 def gameSize():
     return pg.display.get_surface().get_size()
 
+def drawRectRot(x, y, w, h, angle, *color):
+	if pgRunning:
+		cs = math.cos(angle * math.pi/180)
+		sn = math.sin(angle * math.pi/180)
+		p1 = (int(x+((-w/2)*cs-(-h/2)*sn)), int(y+((-w/2)*sn+(-h/2)*cs)))
+		p2 = (int(x+((w/2)*cs-(-h/2)*sn)), int(y+((w/2)*sn+(-h/2)*cs)))
+		p3 = (int(x+((w/2)*cs-(h/2)*sn)), int(y+((w/2)*sn+(h/2)*cs)))
+		p4 = (int(x+((-w/2)*cs-(h/2)*sn)), int(y+((-w/2)*sn+(h/2)*cs)))
+		pointList = (p1, p2, p3, p4)
+		pg.draw.polygon(pgScreen, color, pointList)
+	else:
+		print("Start the Game")
+
 def drawRect(x, y, w, h, *color):
-    if pgRunning:
-        pg.draw.rect(pgScreen, color, (int(x), int(y), int(w), int(h)))
-    else:
-        print("Start the Game")
+	if pgRunning:
+		pg.draw.rect(pgScreen, color, (int(x), int(y), int(w), int(h)))
+	else:
+		print("Start the Game")
 
 def drawImage(x, y, w, h, image):
     if pgRunning:
@@ -176,9 +195,12 @@ def mouseClicked():
 
 def mouseReleased():
     pass
-
+p = Particle(Vector(40, 40))
 def update(deltaTime):
-	pass
+	drawBg(0, 0, 0)
+	p.applyGravity(Vector(0, 0.6))
+	p.update(deltaTime)
+	p.show()
 
 def events(evts):
     pass
