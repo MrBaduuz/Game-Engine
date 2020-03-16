@@ -39,7 +39,7 @@ class Fruit:
 			if list_len > 2:
 				p1 = slices[slice_ind].list[list_len-1]
 				p2 = slices[slice_ind].list[list_len-2]
-				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 6**2:
+				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 3**2:
 					global score
 					score += 1
 					self.restart()
@@ -78,7 +78,7 @@ class Bomb:
 			if list_len > 2:
 				p1 = slices[slice_ind].list[list_len-1]
 				p2 = slices[slice_ind].list[list_len-2]
-				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 6**2:
+				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 3**2:
 					menu = True
 		return False
 

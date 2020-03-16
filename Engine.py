@@ -1,4 +1,5 @@
-import pygame as pg
+#import pygame as pg
+import math
 pgScreen = None
 pgClock = None
 pgFrameRate = 0
@@ -11,6 +12,55 @@ class Image:
 class Sound:
     def __init__(self, path):
         self.sound = pg.mixer.Sound(path)
+
+class Vector:
+	def __init__(self, *coords):
+		self.x = 0
+		self.y = 0
+		self.z = 0
+		if len(coords) == 3:
+			self.x = coords[0]
+			self.y = coords[1]
+			self.z = coords[2]
+		elif len(coords) == 2:
+			self.x = coords[0]
+			self.y = coords[1]
+		elif len(coords) == 1:
+			self.x = math.cos(coords[0] * (math.pi/180))
+			self.y = math.sin(coords[0] * (math.pi/180))
+	def mag(self):
+		return math.sqrt(self.x**2 + self.y**2 +self.z**2)
+	def magSq(self):
+		return self.x**2 + self.y**2 +self.z**2
+	def setMag(self, mg):
+		self.x *= mg/self.mag()
+		self.y *= mg/self.mag()
+		self.z *= mg/self.mag()
+
+	def __add__(self, oth):
+		x = self.x + oth.x
+		y = self.y + oth.y
+		z = self.z + oth.z
+		return Vector(x, y, z)
+	def __sub__(self, oth):
+		x = self.x - oth.x
+		y = self.y - oth.y
+		z = self.z - oth.z
+		return Vector(x, y, z)
+	def __mul__(self, oth):
+		x = self.x * oth.x
+		y = self.y * oth.y
+		z = self.z * oth.z
+		return Vector(x, y, z)
+	def __div__(self, oth):
+		x = self.x / oth.x
+		y = self.y / oth.y
+		z = self.z / oth.z
+		return Vector(x, y, z)
+	def __str__(self):
+		return "X:{} Y:{} Z:{}".format(self.x, self.y, self.z)
+
+
 
 def gameSize():
     return pg.display.get_surface().get_size()
@@ -129,3 +179,7 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
+
+v1 = Vector(2, 2, 1)
+v2 = Vector(3, 4, 2)
+print((v1*v2))

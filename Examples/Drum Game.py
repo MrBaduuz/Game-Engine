@@ -12,7 +12,7 @@ eng.createGame("Drums", 600, 600, 60)
 width, height = eng.gameSize()
 mouseX, mouseY = (0, 0)
 colors = [(223, 226, 122), (226, 122, 122), (132, 226, 122), (122, 122, 226)]
-clicked_colors = [(255, 255, 0), (255, 0, 0), (0, 255, 0), (0, 0, 225)]
+clicked_colors = [(255, 255, 0), (255, 0, 0), (0, 255, 0), (0, 0, 215)]
 music_path = "C:\\Users\\Jöl\\Documents\\Projects\\Game-Engine\\Examples\\"
 print(sys.path[0])
 sounds = [eng.Sound(music_path + "NÄÄ.wav"), eng.Sound(music_path + "ÜÜ.wav"), eng.Sound(music_path + "EN.wav"), eng.Sound(music_path + "JAA.wav")]
