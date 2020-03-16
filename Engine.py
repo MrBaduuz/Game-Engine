@@ -1,4 +1,4 @@
-#import pygame as pg
+import pygame as pg
 import math
 pgScreen = None
 pgClock = None
@@ -59,6 +59,27 @@ class Vector:
 		return Vector(x, y, z)
 	def __str__(self):
 		return "X:{} Y:{} Z:{}".format(self.x, self.y, self.z)
+	def copy(self):
+		return Vector(self.x, self.y, self.z)
+	def set(*coords):
+		if len(coords) == 3:
+			self.x = coords[0]
+			self.y = coords[1]
+			self.z = coords[2]
+		elif len(coords) == 2:
+			self.x = coords[0]
+			self.y = coords[1]
+		elif len(coords) == 1:
+			self.x = math.cos(coords[0] * (math.pi/180))
+			self.y = math.sin(coords[0] * (math.pi/180))
+	def dist(self, oth):
+		return (self-oth).mag()
+	def distSq(self, oth):
+		return (self-oth).magSq()
+	def heading(self):
+		return math.atan2(self.y, self.x) * 180 / math.pi
+	def angleBetween(self, oth):
+		return abs((self.heading()-oth.heading()))
 
 
 
@@ -179,7 +200,3 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
-
-v1 = Vector(2, 2, 1)
-v2 = Vector(3, 4, 2)
-print((v1*v2))
