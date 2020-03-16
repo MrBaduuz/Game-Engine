@@ -100,16 +100,14 @@ class Particle:
 		self.lifetime = 1
 		self.death_speed = 0.001
 	def show(self):
-		drawRectRot(self.pos.x-20, self.pos.y-20, 40, 40, self.lifetime * 7200, (255, 0, 255))
-	def update(self, dt):
+		pass
+	def physics(self, dt):
 		self.vel += self.acc * dt * 60
 		self.pos += self.vel * dt * 60
 		self.acc.set(0, 0)
 		self.lifetime -= self.death_speed * dt * 60
-		if self.lifetime < 0:
-			return True
-		else:
-			return False
+	def isDead(self):
+		return self.lifetime < 0
 	def applyForce(self, f):
 		self.acc += f / self.mass
 	def applyGravity(self, f):
