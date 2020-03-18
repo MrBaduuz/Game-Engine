@@ -39,7 +39,7 @@ class Fruit:
 			if list_len > 2:
 				p1 = slices[slice_ind].list[list_len-1]
 				p2 = slices[slice_ind].list[list_len-2]
-				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 3**2:
+				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 2:
 					global score
 					score += 1
 					self.restart()
@@ -78,12 +78,14 @@ class Bomb:
 			if list_len > 2:
 				p1 = slices[slice_ind].list[list_len-1]
 				p2 = slices[slice_ind].list[list_len-2]
-				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 3**2:
+				if (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 > 3:
 					menu = True
 		return False
 
 
 eng.createGame("Fruit Ninja", 800, 800, 120)
+music_path = sys.path[0] + "\\beat.wav"
+music = eng.Sound(music_path)
 eng.setIcon(sys.path[0] + "\\fruit_icon.ico")
 eng.hide_mouse(True)
 del_time = 0.1
@@ -101,6 +103,7 @@ def cross(x):
 	eng.drawLine(x-10, 40, x+10, 20, (255, 0, 0, 5))
 
 def update(deltaTime):
+	eng.playSound(music)
 	global mouseX, mouseY, slices, slice_ind
 	mouseX, mouseY = eng.mouseCoords()
 	eng.drawBg(50, 50, 50)

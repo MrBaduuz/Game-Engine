@@ -283,5 +283,3 @@ def run():
         update(deltaTime)
         events(pg.event.get())
         pg.display.update()
-createGame()
-run()
