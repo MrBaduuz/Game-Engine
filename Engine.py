@@ -120,13 +120,16 @@ class Particle:
 		self.acc += f
 
 class ParticleSystem:
-	def __init__(self, cap, ParticleType, adrate):
+	def __init__(self, cap, ParticleType, adrate, size):
 		self.ps = []
 		self.addition_rate = adrate
 		self.capacity = cap
 		self.ptype = ParticleType
 		self.counter = 0
 		self.oldest = 0
+		self.size = size
+		if size <= 0:
+			self.size = -2
 
 	def show(self):
 		for p in self.ps:
@@ -139,18 +142,21 @@ class ParticleSystem:
 			if p.isDead():
 				self.ps.remove(p)
 	def add(self):
-		if self.counter > self.addition_rate:
-			self.counter = 0
-			if len(self.ps) < self.capacity:
-				self.ps.append(self.initParticle())
-			else:
-				self.ps[self.oldest] = self.initParticle()
-				self.oldest += 1
-				self.oldest %= self.capacity
+		while self.counter > self.addition_rate:
+			self.counter -= self.addition_rate
+			if self.size > 0 or self.size == -2:
+				self.size -= 1
+				if self.size == -3:
+					self.size = -2
+				if len(self.ps) < self.capacity:
+					self.ps.append(self.initParticle())
+				else:
+					self.ps[self.oldest] = self.initParticle()
+					self.oldest += 1
+					self.oldest %= self.capacity
 
 	def initParticle(self):
 		return self.ptype()
-
 
 
 def gameSize():
