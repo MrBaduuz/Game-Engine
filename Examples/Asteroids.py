@@ -2,22 +2,25 @@ import sys
 engine_path = sys.path[0].replace("Examples", "")
 sys.path.append(engine_path)
 import Engine as eng
-import math
+import random
 
 eng.createGame("Asteroids", 600 * 4/3, 600, 60)
 eng.hide_mouse(True)
 
 pos = eng.Vector(eng.gameSize()[0]/2, eng.gameSize()[1]/2)
+vel = eng.Vector(0, 0)
 reload_time = 0.2
 last_shot = 0
 bullet_speed = 10
+mouseX, mouseY = eng.mouseCoords()
 
 class Bullet(eng.Particle):
 	def __init__(self, x, y, mx, my):
 		super().__init__(eng.Vector(x, y))
 		self.vel = eng.Vector(mx-x, my-y)
-		print(self.vel)
 		self.vel.setMag(bullet_speed)
+		global explosions
+		explosions.append(Exploder(self.pos, self.vel))
 		
 	def show(self):
 		eng.drawEllipse(self.pos.x, self.pos.y, 7, 7, (170, 170, 170))
@@ -33,7 +36,28 @@ class Gun(eng.ParticleSystem):
 	def add(self):
 		pass
 	def particle(self):
-		return self.ptype(pos.x, pos.y, eng.mouseCoords()[0], eng.mouseCoords()[1])
+		return self.ptype(pos.x, pos.y, mouseX, mouseY)
+
+class Explosion(eng.Particle):
+	def __init__(self, pos, heading):
+		super().__init__(pos)
+		self.angle = random.randint(0, 359)
+		self.a_vel = random.randint(-10, 10)
+		self.vel = eng.Vector(random.randint(heading-50, heading+50))
+		self.vel.setMag(random.randint(5, 7))
+		self.death_speed = 0.038
+	def show(self):
+		eng.drawRectRot(self.pos.x, self.pos.y, self.lifetime*15, self.lifetime*15, self.angle, (255, 255, 255))
+	def update(self, dt):
+		self.physics(dt)
+		self.angle += self.a_vel
+class Exploder(eng.ParticleSystem):
+	def __init__(self, pos, vel):
+		super().__init__(20, Explosion, 0, 20)
+		self.pos = pos
+		self.heading = int(vel.heading())
+	def particle(self):
+		return self.ptype(self.pos, self.heading)
 
 gun = Gun()
 
@@ -55,27 +79,36 @@ def shoot(dt):
 	last_shot -= dt
 
 def movement(keys, dt):
-	global pos
-	vel = eng.Vector(0, 0)
+	global pos, vel
+	acc = eng.Vector(0, 0)
 	if keys[eng.keys.K_LEFT] or keys[eng.keys.K_a]:
-		vel -= eng.Vector(1, 0)
+		acc -= eng.Vector(1, 0)
 	if keys[eng.keys.K_RIGHT] or keys[eng.keys.K_d]:
-		vel += eng.Vector(1, 0)
+		acc += eng.Vector(1, 0)
 	if keys[eng.keys.K_UP] or keys[eng.keys.K_w]:
-		vel -= eng.Vector(0, 1)
+		acc -= eng.Vector(0, 1)
 	if keys[eng.keys.K_DOWN] or keys[eng.keys.K_s]:
-		vel += eng.Vector(0, 1)
-	vel.setMag(5*dt*60)
-	pos += vel
+		acc += eng.Vector(0, 1)
+	acc.setMag(0.25*dt*60)
+	vel += acc
+	vel.limit(5)
+	pos += vel*dt*60
+	vel *= 0.99
 
+explosions = []
 def update(deltaTime):
-	global pos
+	global pos, mouseX, mouseY, vel
 	eng.drawBg(50, 50, 50)
 	mouseX, mouseY = eng.mouseCoords()
 	keys = eng.keyPressed()
 	movement(keys, deltaTime)
 	bounds()
 	shoot(deltaTime)
+	for exp in explosions:
+		exp.update(deltaTime)
+		exp.show()
+		if exp.isDead:
+			explosions.remove(exp)
 	gun.update(deltaTime)
 	gun.show()
 	eng.drawPolyRot(pos.x, pos.y, [10, -10, -10, -10, 0, 10], eng.atan2(mouseY-pos.y, mouseX-pos.x), (200, 200, 200))

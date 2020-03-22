@@ -37,9 +37,10 @@ class Vector:
 		return self.x**2 + self.y**2 +self.z**2
 	def setMag(self, mg):
 		if self.mag() != 0:
-			self.x *= mg/self.mag()
-			self.y *= mg/self.mag()
-			self.z *= mg/self.mag()
+			div = float(mg)/float(self.mag())
+			self.x *= div
+			self.y *= div
+			self.z *= div
 	def limit(self, mg):
 		if self.mag() > mg:
 			self.setMag(mg)
@@ -159,6 +160,9 @@ class ParticleSystem:
 
 	def particle(self):
 		return self.ptype()
+
+	def isDead(self):
+		return size <= 0 and size != -2
 
 
 def atan2(y,x):
