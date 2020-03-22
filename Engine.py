@@ -1,8 +1,10 @@
 import pygame as pg
+import pygame.locals as pgloc
 import math
 import random
 pgScreen = None
 pgClock = None
+keys = pgloc
 pgFrameRate = 0
 pgRunning = False
 
@@ -34,9 +36,10 @@ class Vector:
 	def magSq(self):
 		return self.x**2 + self.y**2 +self.z**2
 	def setMag(self, mg):
-		self.x *= mg/self.mag()
-		self.y *= mg/self.mag()
-		self.z *= mg/self.mag()
+		if self.mag() != 0:
+			self.x *= mg/self.mag()
+			self.y *= mg/self.mag()
+			self.z *= mg/self.mag()
 	def limit(self, mg):
 		if self.mag() > mg:
 			self.setMag(mg)
@@ -142,18 +145,17 @@ class ParticleSystem:
 			if p.isDead():
 				self.ps.remove(p)
 	def add(self):
-		while self.counter > self.addition_rate:
+		while self.counter > self.addition_rate and (self.size > 0 or self.size == -2):
 			self.counter -= self.addition_rate
-			if self.size > 0 or self.size == -2:
-				self.size -= 1
-				if self.size == -3:
-					self.size = -2
-				if len(self.ps) < self.capacity:
-					self.ps.append(self.particle())
-				else:
-					self.ps[self.oldest] = self.particle()
-					self.oldest += 1
-					self.oldest %= self.capacity
+			self.size -= 1
+			if self.size == -3:
+				self.size = -2
+			if len(self.ps) < self.capacity:
+				self.ps.append(self.particle())
+			else:
+				self.ps[self.oldest] = self.particle()
+				self.oldest += 1
+				self.oldest %= self.capacity
 
 	def particle(self):
 		return self.ptype()
