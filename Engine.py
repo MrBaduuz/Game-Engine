@@ -95,7 +95,7 @@ class Vector:
 	def distSq(self, oth):
 		return (self-oth).magSq()
 	def heading(self):
-		return atan2(self.y, self.x) * 180 / math.pi
+		return math.atan2(self.y, self.x) * 180 / math.pi
 	def angleBetween(self, oth):
 		return abs((self.heading()-oth.heading()))
 
@@ -162,7 +162,7 @@ class ParticleSystem:
 		return self.ptype()
 
 	def isDead(self):
-		return size <= 0 and size != -2
+		return self.size <= 0 and self.size != -2  and len(self.ps) == 0
 
 
 def atan2(y,x):

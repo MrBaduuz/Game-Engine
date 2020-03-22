@@ -59,6 +59,15 @@ class Exploder(eng.ParticleSystem):
 	def particle(self):
 		return self.ptype(self.pos, self.heading)
 
+class Enemy(eng.Particle):
+	def __init__(self):
+		pos = Vector(random.randint(0, eng.gameSize()[0]), random.randint(0, eng.gameSize()[1]))
+		super().__init__(pos)
+	def show(self):
+		eng.drawRect(self.pos.x, self.pos.y, 40, 40, (130, 130, 130))
+	def update(self, dt):
+		
+
 gun = Gun()
 
 def bounds():
@@ -107,7 +116,7 @@ def update(deltaTime):
 	for exp in explosions:
 		exp.update(deltaTime)
 		exp.show()
-		if exp.isDead:
+		if exp.isDead():
 			explosions.remove(exp)
 	gun.update(deltaTime)
 	gun.show()
