@@ -91,7 +91,7 @@ class Vector:
 	def distSq(self, oth):
 		return (self-oth).magSq()
 	def heading(self):
-		return math.atan2(self.y, self.x) * 180 / math.pi
+		return atan2(self.y, self.x) * 180 / math.pi
 	def angleBetween(self, oth):
 		return abs((self.heading()-oth.heading()))
 
@@ -149,23 +149,47 @@ class ParticleSystem:
 				if self.size == -3:
 					self.size = -2
 				if len(self.ps) < self.capacity:
-					self.ps.append(self.initParticle())
+					self.ps.append(self.particle())
 				else:
-					self.ps[self.oldest] = self.initParticle()
+					self.ps[self.oldest] = self.particle()
 					self.oldest += 1
 					self.oldest %= self.capacity
 
-	def initParticle(self):
+	def particle(self):
 		return self.ptype()
 
+
+def atan2(y,x):
+	return toDegrees((math.atan2(-y, x)))
+
+def toRadians(angle):
+	return angle * math.pi/180
+
+def toDegrees(angle):
+	return angle * 180/math.pi
 
 def gameSize():
     return pg.display.get_surface().get_size()
 
+def drawPolyRot(cx, cy, lst, angle, *color):
+	newList = []
+	for i in range(0, len(lst), 2):
+		cs = math.cos((270-angle) * math.pi/180)
+		sn = math.sin((270-angle) * math.pi/180)
+		x = int(lst[i]*cs-lst[i+1]*sn)
+		y = int(lst[i]*sn+lst[i+1]*cs)
+		newList.append([cx+x, cy+y])
+	pg.draw.polygon(pgScreen, color, newList)
+def drawPoly(lst, *color):
+	newList = []
+	for i in range(0, len(lst), 2):
+		newList.append([int(lst[i]), int(lst[i+1])])
+	pg.draw.polygon(pgScreen, color, newList)
+
 def drawRectRot(x, y, w, h, angle, *color):
 	if pgRunning:
-		cs = math.cos(angle * math.pi/180)
-		sn = math.sin(angle * math.pi/180)
+		cs = math.cos(-angle * math.pi/180)
+		sn = math.sin(-angle * math.pi/180)
 		p1 = (int(x+((-w/2)*cs-(-h/2)*sn)), int(y+((-w/2)*sn+(-h/2)*cs)))
 		p2 = (int(x+((w/2)*cs-(-h/2)*sn)), int(y+((w/2)*sn+(-h/2)*cs)))
 		p3 = (int(x+((w/2)*cs-(h/2)*sn)), int(y+((w/2)*sn+(h/2)*cs)))
@@ -231,6 +255,9 @@ def mouseCoords():
 def mousePressed():
     return pg.mouse.get_pressed(1, 0, 0)[0]
 
+def keyPressed():
+	return pg.key.get_pressed()
+
 def hide_mouse(boolean):
     pg.mouse.set_visible(not boolean)
 
@@ -251,7 +278,7 @@ def createGame(caption="New Game", width=600, height=600, framerate=60):
     if not pgScreen:
         pg.init()
         pg.mixer.init()
-        pgScreen = pg.display.set_mode((width, height))
+        pgScreen = pg.display.set_mode((int(width), int(height)))
         pg.display.set_caption(caption)
         pgClock = pg.time.Clock()
         pgFrameRate = framerate
